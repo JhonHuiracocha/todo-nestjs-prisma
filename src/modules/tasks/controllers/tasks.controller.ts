@@ -33,8 +33,8 @@ export class TasksController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.tasksService.findOne(+id);
+  getTaskById(@Param('id') id: string): Observable<Task> {
+    return this.tasksService.getTaskById(id);
   }
 
   @Patch(':id')
