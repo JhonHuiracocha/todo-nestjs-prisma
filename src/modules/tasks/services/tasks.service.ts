@@ -14,7 +14,7 @@ export class TasksService {
     return from(this.prisma.task.create({ data: createTaskDto }));
   }
 
-  getTasks(page: number = 1, limit: number = 20): Observable<Task[]> {
+  getTasks(page: number, limit: number): Observable<Task[]> {
     limit = limit > 20 ? 20 : limit;
     const offset = (page - 1) * limit;
 

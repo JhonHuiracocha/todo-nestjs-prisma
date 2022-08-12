@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   Query,
+  ParseIntPipe,
+  DefaultValuePipe,
 } from '@nestjs/common';
 import { Task } from '@prisma/client';
 import { Observable } from 'rxjs';
@@ -26,8 +28,8 @@ export class TasksController {
 
   @Get()
   getTasks(
-    @Query('page') page: number,
-    @Query('limit') limit: number,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
   ): Observable<Task[]> {
     return this.tasksService.getTasks(page, +limit);
   }

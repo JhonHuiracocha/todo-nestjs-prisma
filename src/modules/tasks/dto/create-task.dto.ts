@@ -10,7 +10,7 @@ import { Status } from '@prisma/client';
 export class CreateTaskDto {
   @IsString()
   @IsNotEmpty()
-  @MaxLength(60, { message: 'The title is too long.' })
+  @MaxLength(60)
   title: string;
 
   @IsString()
