@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Task } from '@prisma/client';
-import { from, map, Observable } from 'rxjs';
+import { from, map, Observable, switchMap } from 'rxjs';
 
 import { PrismaService } from '../../../common/services';
 
@@ -50,11 +50,55 @@ export class TasksService {
     );
   }
 
-  update(id: number, updateTaskDto: UpdateTaskDto) {
-    return `This action updates a #${id} task`;
+  updatePostById(id: string, updateTaskDto: UpdateTaskDto): Observable<Task> {
+    return from(
+      this.prisma.task.findFirst({
+        where: {
+          id,
+          isDelete: false,
+        },
+      }),
+    ).pipe(
+      switchMap((taskFound: Task) => {
+        if (!taskFound)
+          throw new NotFoundException('The task has not been found.');
+
+        return from(
+          this.prisma.task.update({
+            where: {
+              id,
+            },
+            data: updateTaskDto,
+          }),
+        );
+      }),
+    );
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} task`;
+  deleteTaskById(id: string): Observable<Task> {
+    return from(
+      this.prisma.task.findFirst({
+        where: {
+          id,
+          isDelete: false,
+        },
+      }),
+    ).pipe(
+      switchMap((taskFound: Task) => {
+        if (!taskFound)
+          throw new NotFoundException('The task has not been found.');
+
+        return from(
+          this.prisma.task.update({
+            where: {
+              id,
+            },
+            data: {
+              isDelete: true,
+            },
+          }),
+        );
+      }),
+    );
   }
 }
