@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { Task } from '@prisma/client';
+import { from, Observable } from 'rxjs';
 
 import { PrismaService } from '../../../common/services';
 
@@ -8,12 +10,26 @@ import { CreateTaskDto, UpdateTaskDto } from '../dto';
 export class TasksService {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(createTaskDto: CreateTaskDto) {
-    return 'This action adds a new task';
+  createTask(createTaskDto: CreateTaskDto): Observable<Task> {
+    return from(this.prisma.task.create({ data: createTaskDto }));
   }
 
-  findAll() {
-    return `This action returns all tasks`;
+  getTasks(page: number = 1, limit: number = 20): Observable<Task[]> {
+    limit = limit > 20 ? 20 : limit;
+    const offset = (page - 1) * limit;
+
+    return from(
+      this.prisma.task.findMany({
+        where: {
+          isDelete: false,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: limit,
+        skip: offset,
+      }),
+    );
   }
 
   findOne(id: number) {

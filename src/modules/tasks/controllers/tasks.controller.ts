@@ -6,7 +6,10 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
+import { Task } from '@prisma/client';
+import { Observable } from 'rxjs';
 
 import { TasksService } from '../services';
 
@@ -17,13 +20,16 @@ export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Post()
-  create(@Body() createTaskDto: CreateTaskDto) {
-    return this.tasksService.create(createTaskDto);
+  createTask(@Body() createTaskDto: CreateTaskDto): Observable<Task> {
+    return this.tasksService.createTask(createTaskDto);
   }
 
   @Get()
-  findAll() {
-    return this.tasksService.findAll();
+  getTasks(
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+  ): Observable<Task[]> {
+    return this.tasksService.getTasks(page, +limit);
   }
 
   @Get(':id')
