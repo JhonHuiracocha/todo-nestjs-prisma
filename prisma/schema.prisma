@@ -12,7 +12,7 @@ model Task {
   title       String   @db.VarChar(60)
   description String   @db.Text
   status      Status   @default(ON_PROGRESS)
-  isDelete    Boolean  @default(true)
+  isDelete    Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
